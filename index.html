@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        var canvas = document.createElement('canvas');
+        var ctx = canvas.getContext('2d');
+        var W_H = 600;
+        canvas.width = W_H;
+        canvas.height = W_H;
+        canvas.style.border = '1px solid #ccc';
+        document.body.appendChild(canvas);
+
+
+        var data = [
+            {
+                name: '项目一',
+                num: 10
+            }, {
+                name: '项目二',
+                num: 20
+            }, {
+                name: '项目三',
+                num: 25
+            }, {
+                name: '项目四',
+                num: 41
+            }, {
+                name: '项目五',
+                num: 60
+            }, {
+                name: '项目四',
+                num: 21
+            }, {
+                name: '项目五',
+                num: 90
+            }
+        ];
+
+
+        var maxArr = JSON.parse(JSON.stringify(data)).sort(function (a, b) {
+            return b.num - a.num;
+        })[0].num;
+
+
+        var maegins = 450 / data.length
+
+        canvas.addEventListener('mousemove', function (e) {
+            ctx.clearRect(0, 0, 600, 600);
+            pag(e);
+        })
+
+        var colors = data.map(function () {
+            return ranColor();
+        })
+
+        pag();
+        function pag(e) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(50, 50);
+            ctx.lineTo(50, 550);
+            ctx.lineTo(550, 550);
+            ctx.stroke();
+            ctx.closePath();
+            ctx.restore();
+
+
+            for (var i = 50; i <= 550; i += 50) {
+                ctx.save();
+                ctx.beginPath();
+                ctx.lineTo(50, i);
+                ctx.lineTo(550, i);
+                ctx.fillText(maxArr - (Math.floor(((i - 50) / 500) * maxArr)), 20, i);
+                ctx.stroke();
+                ctx.closePath();
+                ctx.restore();
+            }
+
+
+            for (var j = 0; j < data.length; j++) {
+                ctx.save();
+                ctx.beginPath();
+                ctx.fillStyle = colors[j];
+                ctx.rect(maegins * j + 100, 549, 30, -data[j].num / maxArr * 500);
+                if (e && ctx.isPointInPath(e.offsetX, e.offsetY)) {
+                    ctx.fillStyle = 'orange';
+                    ctx.fill();
+                    ctx.fillText(data[j].num, maegins * i + 50, -data[j].num / maxArr * 400 - 10);
+                    var numText = '优';
+                    if (data[j].num < 90 && data[j].num >= 60) {
+                        numText = '良';
+                    } else if (data[j].num < 60) {
+                        numText = '不及格';
+                    }
+                    ctx.save();
+                    ctx.fillStyle = 'red';
+                    ctx.font = 'bold 24px 宋体';
+                    ctx.fillText(numText, e.offsetX - 50, -150 + e.offsetY);
+                    ctx.restore();
+                }
+                ctx.fillText(data[j].name, maegins * j + 98, 570);
+                ctx.fill();
+                ctx.closePath();
+                ctx.restore();
+            }
+        }
+
+        function ranColor() {
+            return `rgba(${Math.random() * 255},${Math.random() * 255},${Math.random() * 255},1)`;
+        }
+    </script>
+</body>
+
+</html>
